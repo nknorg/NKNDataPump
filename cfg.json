@@ -1,0 +1,8 @@
+{
+    "HttpScheme":"http",
+    "NodeServer":"127.0.0.1",
+    "NodePort":"21232",
+    "Logfile":"log.log",
+    "LogLevel":5,
+    "APIServerPort": 8999
+}
