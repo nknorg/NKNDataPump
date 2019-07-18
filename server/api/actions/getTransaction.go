@@ -55,13 +55,16 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 	var transfers []storageItem.TransferItem
 	var sc []storageItem.SigchainItem
 	switch tx.TxType {
-	case chainDataTypes.Coinbase:
+	case chainDataTypes.CoinbaseN:
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case chainDataTypes.TransferAsset:
+	case chainDataTypes.TransferAssetN:
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case chainDataTypes.Commit:
+	//case chainDataTypes.Commit:
+	//	sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
+
+	case chainDataTypes.SigChainN:
 		sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
 
 	default:

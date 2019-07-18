@@ -16,6 +16,11 @@ func transactionsFromRows(rows *sql.Rows) (txList []storageItem.TransactionItem,
 			&tx.Height,
 			&tx.HeightIdxUnion,
 			&tx.TxType,
+
+			&tx.Attributes,
+			&tx.Fee,
+			&tx.Nonce,
+
 			&tx.AssetId,
 			&tx.UTXOInputCount,
 			&tx.UTXOOutputCount,

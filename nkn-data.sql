@@ -117,9 +117,14 @@ CREATE TABLE `t_blocks` (
   `hash` varchar(64) NOT NULL COMMENT '本区块哈希',
   `prev_hash` varchar(64) NOT NULL COMMENT '前一个区块的哈希',
   `next_hash` varchar(64) NOT NULL COMMENT '后一个区块的哈希',
+  `signature` varchar(128) NOT NULL COMMENT '本区块签名',
+  `signer_id` varchar(64) NOT NULL,
+  `signer_pk` varchar(64) NOT NULL,
+  `state_root` varchar(64) NOT NULL,
   `validator` varchar(100) NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '本区块时间戳',
   `transaction_root` varchar(64) NOT NULL COMMENT '交易树根',
+  `winner_hash` varchar(64) NOT NULL,
   `size` int(10) UNSIGNED NOT NULL COMMENT '本区块大小',
   `transaction_count` int(10) UNSIGNED NOT NULL COMMENT '本区块交易数量'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -161,10 +166,14 @@ CREATE TABLE `t_pay` (
 CREATE TABLE `t_sigchain` (
   `height` int(11) NOT NULL COMMENT '打包进的区块高度',
   `sig_idx` int(10) UNSIGNED NOT NULL COMMENT '签名索引',
+  `id`    varchar(64) NOT NULL,
   `addr` varchar(100) NOT NULL,
   `next_pubkey` varchar(100) NOT NULL,
   `tx_hash` varchar(100) NOT NULL COMMENT '所在交易的hash',
   `sig_data` varchar(2000) NOT NULL COMMENT '签名',
+  `sig_algo` varchar(16),
+  `vrf` varchar(64),
+  `proof` varchar(128),
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -178,13 +187,37 @@ CREATE TABLE `t_transactions` (
   `hash` varchar(64) NOT NULL COMMENT '交易的哈希值',
   `height` int(10) UNSIGNED NOT NULL COMMENT '交易所在区块高度',
   `height_idx_union` bigint(20) UNSIGNED NOT NULL COMMENT '所在区块高度和交易在区块内的索引的联合值',
-  `tx_type` int(10) UNSIGNED NOT NULL COMMENT '交易类型',
-  `asset_id` varchar(64) NOT NULL COMMENT '交易的资产id',
-  `utxo_input_count` int(10) UNSIGNED NOT NULL COMMENT 'utxo输入个数',
-  `utxo_output_count` int(10) UNSIGNED NOT NULL COMMENT 'utxo的输出个数',
+  `tx_type` varchar(64) NOT NULL COMMENT '交易类型',
+
+  `attributes` varchar(64) NOT NULL,
+  `fee`   int(10) NOT NULL,
+  `nonce` int(10) NOT NULL,
+
+  `asset_id` varchar(64) COMMENT '交易的资产id',
+  `utxo_input_count` int(10) UNSIGNED COMMENT 'utxo输入个数',
+  `utxo_output_count` int(10) UNSIGNED COMMENT 'utxo的输出个数',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '交易时间，和区块时间相同',
   `parse_status` int(10) UNSIGNED NOT NULL COMMENT '交易的解析状态，用于容错'
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `t_generate_id`
+--
+
+CREATE TABLE `t_generate_id` (
+  `height` int(11) NOT NULL COMMENT '打包进的区块高度',
+  `tx_hash` varchar(100) NOT NULL COMMENT '所在交易的hash',
+  `public_key` varchar(64) NOT NULL,
+  `registration_fee` int(10) UNSIGNED NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+
+-- --------------------------------------------------------
 
 --
 -- 转储表的索引
@@ -251,6 +284,13 @@ ALTER TABLE `t_sigchain`
 --
 ALTER TABLE `t_transactions`
   ADD PRIMARY KEY (`hash`);
+
+--
+-- 表的索引 `t_generate_id`
+--
+ALTER TABLE `t_generate_id`
+  ADD KEY `height` (`height`,`tx_hash`) USING BTREE,
+  ADD KEY `tx_hash` (`tx_hash`);
 
 --
 -- 在导出的表使用AUTO_INCREMENT
