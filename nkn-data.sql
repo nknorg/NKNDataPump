@@ -167,7 +167,6 @@ CREATE TABLE `t_sigchain` (
   `height` int(11) NOT NULL COMMENT '打包进的区块高度',
   `sig_idx` int(10) UNSIGNED NOT NULL COMMENT '签名索引',
   `id`    varchar(64) NOT NULL,
-  `addr` varchar(100) NOT NULL,
   `next_pubkey` varchar(100) NOT NULL,
   `tx_hash` varchar(100) NOT NULL COMMENT '所在交易的hash',
   `sig_data` varchar(2000) NOT NULL COMMENT '签名',
@@ -187,7 +186,7 @@ CREATE TABLE `t_transactions` (
   `hash` varchar(64) NOT NULL COMMENT '交易的哈希值',
   `height` int(10) UNSIGNED NOT NULL COMMENT '交易所在区块高度',
   `height_idx_union` bigint(20) UNSIGNED NOT NULL COMMENT '所在区块高度和交易在区块内的索引的联合值',
-  `tx_type` varchar(64) NOT NULL COMMENT '交易类型',
+  `tx_type` int(10) UNSIGNED NOT NULL COMMENT '交易类型',
 
   `attributes` varchar(64) NOT NULL,
   `fee`   int(10) NOT NULL,
@@ -277,7 +276,7 @@ ALTER TABLE `t_sigchain`
   ADD KEY `height_tx` (`height`,`tx_hash`) USING BTREE,
   ADD KEY `tx_hash` (`tx_hash`),
   ADD KEY `tx` (`tx_hash`),
-  ADD KEY `chord_addr` (`addr`);
+  ADD KEY `chord_addr` (`id`);
 
 --
 -- 表的索引 `t_transactions`

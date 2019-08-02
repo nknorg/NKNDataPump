@@ -4,6 +4,7 @@ import (
 	. "NKNDataPump/common"
 	"NKNDataPump/storage/pumpDataTypes"
 	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/nkn/pb"
 )
 
 const (
@@ -62,7 +63,7 @@ func (t *TransactionItem) Table() string {
 func (t *TransactionItem) MappingFrom(data interface{}, extData interface{}) {
 	tx := data.(rpcApiResponse.Transaction)
 	t.Hash = tx.Hash
-	t.TxType = tx.TxType
+	t.TxType = pb.PayloadType_value[tx.TxType]
 	t.Attributes = tx.Attributes
 	t.Fee = tx.Fee
 	t.Nonce = tx.Nonce

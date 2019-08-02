@@ -9,7 +9,7 @@ import (
 	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
 	"NKNDataPump/storage/storageItem"
 	"NKNDataPump/storage"
-	"NKNDataPump/network/chainDataTypes"
+	"github.com/nknorg/nkn/pb"
 )
 
 func rpcDataPump() {
@@ -66,7 +66,7 @@ func pumpBlockHeight() {
 		}
 
 		if blockHeightDiff > 50 {
-			time.Sleep(time.Millisecond * 10)
+			time.Sleep(time.Millisecond * 5)
 		} else {
 			time.Sleep(time.Millisecond * 5)
 		}
@@ -114,11 +114,11 @@ func getBlockDetailByHeight(height int, blockItem *storageItem.BlockItem, wg *sy
 }
 
 func parseTransactions(tx []rpcApiResponse.Transaction, blockItem *storageItem.BlockItem) {
-	processorMap := map[string]func(interface{}, interface{}) error{
-		chainDataTypes.SigChainN:      sigchainProcessor,
-		chainDataTypes.CoinbaseN:      coinbaseProcessor,
-		chainDataTypes.GenerateId:     generateIdProcessor,
-		chainDataTypes.TransferAssetN: transferAssetProcessor,
+	processorMap := map[pb.PayloadType]func(interface{}, interface{}, interface{}) error{
+		pb.SIG_CHAIN_TXN_TYPE:  sigchainProcessor,
+		pb.COINBASE_TYPE:       coinbaseProcessor,
+		pb.GENERATE_ID_TYPE:    generateIdProcessor,
+		pb.TRANSFER_ASSET_TYPE: transferAssetProcessor,
 	}
 
 	var txItems []storageItem.IItem
@@ -129,10 +129,11 @@ func parseTransactions(tx []rpcApiResponse.Transaction, blockItem *storageItem.B
 		txItem.MappingFrom(v, blockItem)
 		txItem.HeightIdxUnion = common.Fmt2Str((uint64(blockItem.Height) << 32) + uint64(i)<<16)
 
-		processor := processorMap[v.TxType]
+		payloadType := pb.PayloadType_value[v.TxType]
+		processor := processorMap[pb.PayloadType(payloadType)]
 		var err error
 		if nil != processor {
-			err = processor(v, txItem)
+			err = processor(v, txItem, blockItem)
 		}
 
 		if nil != err {

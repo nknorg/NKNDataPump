@@ -4,8 +4,7 @@ type Transaction struct {
 	Hash            string
 	Height          uint32
 	HeightIdxUnion  string
-	//TxType          chainDataTypes.TransactionType
-	TxType          string
+	TxType          int32
 
 	Attributes 		string
 	Fee				int

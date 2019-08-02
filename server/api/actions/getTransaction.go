@@ -6,8 +6,8 @@ import (
 	"NKNDataPump/server/api/response"
 	"NKNDataPump/storage/dbHelper"
 	"github.com/gin-gonic/gin"
-	"NKNDataPump/network/chainDataTypes"
 	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/nkn/pb"
 )
 
 var GetTransactionAPI IRestfulAPIAction = &getTransaction{
@@ -23,7 +23,7 @@ func (g *getTransaction) URI(serverURI string) string {
 
 func (g *getTransaction) Action(ctx *gin.Context) {
 	defer func() {
-		if r:=recover(); nil != r {
+		if r := recover(); nil != r {
 			Log.Error(r)
 		}
 	}()
@@ -43,7 +43,7 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 	tx, err := dbHelper.QueryTransactionByHash(hash)
 	if nil != err {
 		if err.(*GatewayError).Code == GW_ERR_NO_SUCH_DATA {
-			response.Success(map[string] interface{} {
+			response.Success(map[string]interface{}{
 				"transaction": nil,
 			})
 		} else {
@@ -54,17 +54,15 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 
 	var transfers []storageItem.TransferItem
 	var sc []storageItem.SigchainItem
+
 	switch tx.TxType {
-	case chainDataTypes.CoinbaseN:
+	case int32(pb.COINBASE_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case chainDataTypes.TransferAssetN:
+	case int32(pb.TRANSFER_ASSET_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	//case chainDataTypes.Commit:
-	//	sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
-
-	case chainDataTypes.SigChainN:
+	case int32(pb.SIG_CHAIN_TXN_TYPE):
 		sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
 
 	default:
@@ -75,9 +73,9 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 		return
 	}
 
-	response.Success(map[string] interface{} {
+	response.Success(map[string]interface{}{
 		"transaction": tx,
-		"sigchain": sc,
-		"transfer": transfers,
+		"sigchain":    sc,
+		"transfer":    transfers,
 	})
 }
