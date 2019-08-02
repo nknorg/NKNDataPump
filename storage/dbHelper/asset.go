@@ -1,7 +1,7 @@
 package dbHelper
 
 import (
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
 )
 

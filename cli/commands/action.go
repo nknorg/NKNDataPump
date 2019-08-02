@@ -1,7 +1,7 @@
 package commands
 
 import (
-	"NKNDataPump/config"
+	"github.com/nknorg/NKNDataPump/config"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
 	"strconv"

@@ -1,9 +1,9 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse/transactionPayload"
-	"NKNDataPump/storage/pumpDataTypes"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse/transactionPayload"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 )
 
 type AssetItem struct {

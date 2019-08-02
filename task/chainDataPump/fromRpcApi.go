@@ -1,14 +1,15 @@
 package chainDataPump
 
 import (
-	"NKNDataPump/network"
-	"NKNDataPump/common"
 	"sync"
 	"time"
-	"NKNDataPump/network/rpcRequest"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
-	"NKNDataPump/storage/storageItem"
-	"NKNDataPump/storage"
+
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/network"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/network/rpcRequest"
+	"github.com/nknorg/NKNDataPump/storage"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"github.com/nknorg/nkn/pb"
 )
 
@@ -159,7 +160,7 @@ func insertItems(items []storageItem.IItem) (err error) {
 }
 
 func recordAddr(addr string, tx storageItem.TransactionItem) {
-	if false != common.GAddrList[addr] {
+	if _, ok := common.GAddrList.Load(addr); ok {
 		return
 	}
 
@@ -171,7 +172,7 @@ func recordAddr(addr string, tx storageItem.TransactionItem) {
 	})
 
 	if nil == err {
-		common.GAddrList[addr] = true
+		common.GAddrList.Store(addr, struct{}{})
 	} else {
 		common.Log.Error(err)
 	}

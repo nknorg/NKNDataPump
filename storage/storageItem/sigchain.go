@@ -1,8 +1,8 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/storage/pumpDataTypes"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 )
 
 type SigchainItem struct {

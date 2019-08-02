@@ -1,16 +1,16 @@
 package apiServerAction
 
 import (
-	. "NKNDataPump/common"
-	. "NKNDataPump/server/api/const"
-	"NKNDataPump/server/api/response"
-	"NKNDataPump/storage/dbHelper"
+	. "github.com/nknorg/NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/server/api/const"
+	"github.com/nknorg/NKNDataPump/server/api/response"
+	"github.com/nknorg/NKNDataPump/storage/dbHelper"
 	"github.com/gin-gonic/gin"
 	"time"
 	"math/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 )
 
 var GetMiscAPI IRestfulAPIAction = &getMisc{

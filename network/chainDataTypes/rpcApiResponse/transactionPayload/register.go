@@ -1,7 +1,7 @@
 package transactionPayload
 
 import (
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 )
 
 type Register struct {

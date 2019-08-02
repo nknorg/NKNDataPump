@@ -1,7 +1,7 @@
 package apiServer
 
 import (
-	. "NKNDataPump/server/api/actions"
+	. "github.com/nknorg/NKNDataPump/server/api/actions"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

@@ -1,9 +1,9 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/storage/pumpDataTypes"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 	"github.com/nknorg/nkn/pb"
 )
 

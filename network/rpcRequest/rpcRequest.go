@@ -2,9 +2,9 @@ package rpcRequest
 
 import (
 	"net/url"
-	. "NKNDataPump/common"
-	. "NKNDataPump/network"
-	. "NKNDataPump/config"
+	. "github.com/nknorg/NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/network"
+	. "github.com/nknorg/NKNDataPump/config"
 	"errors"
 	"compress/gzip"
 	"io"
@@ -12,7 +12,7 @@ import (
 	"net/http"
 	"bytes"
 	"encoding/json"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 	"net"
 	"time"
 )

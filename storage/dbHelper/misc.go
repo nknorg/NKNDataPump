@@ -1,8 +1,8 @@
 	package dbHelper
 
 import (
-	"NKNDataPump/common"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"encoding/json"
 )
 

@@ -2,7 +2,7 @@ package dbHelper
 
 import (
 	"database/sql"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 )
 
 func payFromRows(rows *sql.Rows) (pays []storageItem.PayItem, count int, err error) {

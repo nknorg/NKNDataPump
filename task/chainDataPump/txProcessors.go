@@ -1,14 +1,15 @@
 package chainDataPump
 
 import (
-	"NKNDataPump/storage/storageItem"
-	"NKNDataPump/common"
 	"encoding/hex"
-	"github.com/golang/protobuf/proto"
-	"github.com/nknorg/nkn/pb"
-	nknCommon "github.com/nknorg/nkn/common"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
 	"strconv"
+
+	"github.com/gogo/protobuf/proto"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
+	nknCommon "github.com/nknorg/nkn/common"
+	"github.com/nknorg/nkn/pb"
 )
 
 func coinbaseProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
@@ -125,7 +126,7 @@ func generateIdProcessor(data interface{}, extData interface{}, blockInfo interf
 	generateIdItem.RegistrationFee = genId.RegistrationFee
 	generateIdItem.PublicKey = hex.EncodeToString(genId.PublicKey)
 
-	insertItems([]storageItem.IItem{generateIdItem,})
+	insertItems([]storageItem.IItem{generateIdItem})
 
 	return
 }
@@ -152,7 +153,7 @@ func transferAssetProcessor(data interface{}, extData interface{}, blockInfo int
 	//transferAssetItem.ToAddr = hex.EncodeToString(transferAsset.Recipient)
 	addressUint := nknCommon.BytesToUint160(transferAsset.Recipient)
 	toAddress, addrErr := addressUint.ToAddress()
-	if nil!= addrErr{
+	if nil != addrErr {
 		common.Log.Error(err)
 		return
 	}
