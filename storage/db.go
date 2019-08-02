@@ -1,12 +1,12 @@
 package storage
 
 import (
-	"NKNDataPump/common"
-	"NKNDataPump/storage/dbHelper"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/dbHelper"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
-	"NKNDataPump/config"
+	"github.com/nknorg/NKNDataPump/config"
 )
 
 var db *sql.DB

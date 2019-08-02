@@ -1,8 +1,8 @@
 package webServer
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/server/web/const"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/server/web/const"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"

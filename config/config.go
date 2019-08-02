@@ -1,7 +1,7 @@
 package config
 
 import (
-	. "NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/common"
 	"bytes"
 	"encoding/json"
 	"github.com/sirupsen/logrus"

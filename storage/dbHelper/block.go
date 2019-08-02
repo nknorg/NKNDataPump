@@ -1,9 +1,9 @@
 package dbHelper
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/storage/pumpDataTypes"
-	"NKNDataPump/storage/storageItem"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
 	"errors"
 )

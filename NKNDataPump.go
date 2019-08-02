@@ -1,17 +1,17 @@
 package main
 
 import (
-	"NKNDataPump/cli/commands"
-	"NKNDataPump/common"
-	"NKNDataPump/config"
-	"NKNDataPump/server"
-	"NKNDataPump/storage"
-	"NKNDataPump/task/chainDataPump"
-	"NKNDataPump/task/dataInspection"
+	"github.com/nknorg/NKNDataPump/cli/commands"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/config"
+	"github.com/nknorg/NKNDataPump/server"
+	"github.com/nknorg/NKNDataPump/storage"
+	"github.com/nknorg/NKNDataPump/task/chainDataPump"
+	"github.com/nknorg/NKNDataPump/task/dataInspection"
 	"github.com/urfave/cli"
 	"os"
 	"time"
-	"NKNDataPump/network/rpcRequest"
+	"github.com/nknorg/NKNDataPump/network/rpcRequest"
 )
 
 func getCliApp() (app *cli.App) {

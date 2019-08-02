@@ -1,12 +1,12 @@
 package server
 
 import (
-	. "NKNDataPump/config"
-	"NKNDataPump/server/api"
-	"NKNDataPump/server/web"
+	. "github.com/nknorg/NKNDataPump/config"
+	"github.com/nknorg/NKNDataPump/server/api"
+	"github.com/nknorg/NKNDataPump/server/web"
 	"strconv"
 	"github.com/gin-gonic/gin"
-	"NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/common"
 )
 
 func Start() {

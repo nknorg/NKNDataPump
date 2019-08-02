@@ -1,7 +1,7 @@
 package apiServerAction
 
 import (
-	. "NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/common"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )

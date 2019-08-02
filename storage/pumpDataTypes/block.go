@@ -1,7 +1,7 @@
 package pumpDataTypes
 
 import (
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 )
 
 type Block struct {
