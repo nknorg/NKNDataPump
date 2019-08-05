@@ -30,7 +30,14 @@ func coinbaseProcessor(data interface{}, extData interface{}, blockInfo interfac
 	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
 	rewardTransfer.Hash = txItem.Hash
 	rewardTransfer.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
-	rewardTransfer.FromAddr = hex.EncodeToString(coinbase.Sender)
+	//rewardTransfer.FromAddr = hex.EncodeToString(coinbase.Sender)
+	senderUint160 := nknCommon.BytesToUint160(coinbase.Sender)
+	senderAddress, addrErr := senderUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+	rewardTransfer.FromAddr = senderAddress
 
 	//rewardTransfer.ToAddr = hex.EncodeToString(coinbase.Recipient)
 	recipientUint160 := nknCommon.BytesToUint160(coinbase.Recipient)
@@ -148,7 +155,15 @@ func transferAssetProcessor(data interface{}, extData interface{}, blockInfo int
 	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
 	transferAssetItem.Hash = txItem.Hash
 	transferAssetItem.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
-	transferAssetItem.FromAddr = hex.EncodeToString(transferAsset.Sender)
+
+	//transferAssetItem.FromAddr = hex.EncodeToString(transferAsset.Sender)
+	senderUint160 := nknCommon.BytesToUint160(transferAsset.Sender)
+	senderAddress, addrErr := senderUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+	transferAssetItem.FromAddr = senderAddress
 
 	//transferAssetItem.ToAddr = hex.EncodeToString(transferAsset.Recipient)
 	addressUint := nknCommon.BytesToUint160(transferAsset.Recipient)
