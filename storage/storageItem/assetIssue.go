@@ -1,8 +1,7 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	. "github.com/nknorg/NKNDataPump/common"
 )
 
 type AssetIssueItem struct {
@@ -42,14 +41,17 @@ func (a *AssetIssueItem) Table() string {
 }
 
 func (a *AssetIssueItem) MappingFrom(data interface{}, extData interface{}) {
-	orgTx := data.(rpcApiResponse.Transaction)
+	//orgTx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(TransactionItem)
 
-	txOut := orgTx.Outputs[0]
+	//txOut := orgTx.Outputs[0]
 
 	a.Height = txItem.Height
-	a.AssetId = txOut.AssetID
-	a.Value = txOut.Value
+	//a.AssetId = txOut.AssetID
+	a.AssetId = ""
+	//a.Value = txOut.Value
+	a.Value = ""
 	a.Timestamp = txItem.Timestamp
-	a.IssueTo = txOut.Address
+	//a.IssueTo = txOut.Address
+	a.IssueTo = ""
 }

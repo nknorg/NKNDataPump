@@ -1,6 +1,8 @@
 package common
 
+import "sync"
+
 var (
-	GAddrList = map[string]bool{}
+	GAddrList          sync.Map
 	CurrentBlockHeight = 0
 )

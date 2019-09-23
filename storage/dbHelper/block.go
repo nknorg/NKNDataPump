@@ -1,9 +1,9 @@
 package dbHelper
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/storage/pumpDataTypes"
-	"NKNDataPump/storage/storageItem"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
 	"errors"
 )
@@ -18,9 +18,14 @@ func blocksFromRows(rows *sql.Rows) (blocks []storageItem.BlockItem, count int, 
 			&block.Hash,
 			&block.PrevBlockHash,
 			&block.NextBlockHash,
+			&block.Signature,
+			&block.SignerId,
+			&block.SignerPk,
+			&block.StateRoot,
 			&block.Validator,
 			&block.Timestamp,
 			&block.TransactionsRoot,
+			&block.WinnerHash,
 			&block.Size,
 			&block.TxCount,
 		)

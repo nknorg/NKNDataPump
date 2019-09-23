@@ -1,13 +1,13 @@
 package apiServerAction
 
 import (
-	. "NKNDataPump/common"
-	. "NKNDataPump/server/api/const"
-	"NKNDataPump/server/api/response"
-	"NKNDataPump/storage/dbHelper"
+	. "github.com/nknorg/NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/server/api/const"
+	"github.com/nknorg/NKNDataPump/server/api/response"
+	"github.com/nknorg/NKNDataPump/storage/dbHelper"
 	"github.com/gin-gonic/gin"
-	"NKNDataPump/network/chainDataTypes"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
+	"github.com/nknorg/nkn/pb"
 )
 
 var GetTransactionAPI IRestfulAPIAction = &getTransaction{
@@ -23,7 +23,7 @@ func (g *getTransaction) URI(serverURI string) string {
 
 func (g *getTransaction) Action(ctx *gin.Context) {
 	defer func() {
-		if r:=recover(); nil != r {
+		if r := recover(); nil != r {
 			Log.Error(r)
 		}
 	}()
@@ -43,7 +43,7 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 	tx, err := dbHelper.QueryTransactionByHash(hash)
 	if nil != err {
 		if err.(*GatewayError).Code == GW_ERR_NO_SUCH_DATA {
-			response.Success(map[string] interface{} {
+			response.Success(map[string]interface{}{
 				"transaction": nil,
 			})
 		} else {
@@ -54,14 +54,15 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 
 	var transfers []storageItem.TransferItem
 	var sc []storageItem.SigchainItem
+
 	switch tx.TxType {
-	case chainDataTypes.Coinbase:
+	case int32(pb.COINBASE_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case chainDataTypes.TransferAsset:
+	case int32(pb.TRANSFER_ASSET_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case chainDataTypes.Commit:
+	case int32(pb.SIG_CHAIN_TXN_TYPE):
 		sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
 
 	default:
@@ -72,9 +73,9 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 		return
 	}
 
-	response.Success(map[string] interface{} {
+	response.Success(map[string]interface{}{
 		"transaction": tx,
-		"sigchain": sc,
-		"transfer": transfers,
+		"sigchain":    sc,
+		"transfer":    transfers,
 	})
 }

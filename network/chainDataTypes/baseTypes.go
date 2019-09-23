@@ -2,18 +2,6 @@ package chainDataTypes
 
 type TransactionType byte
 
-const (
-	Coinbase      TransactionType = 0x00
-	Pay		      TransactionType = 0x01
-	TransferAsset TransactionType = 0x10
-	RegisterAsset TransactionType = 0x11
-	IssueAsset    TransactionType = 0x12
-	BookKeeper    TransactionType = 0x20
-	Prepaid       TransactionType = 0x40
-	Withdraw      TransactionType = 0x41
-	Commit        TransactionType = 0x42
-)
-
 type TransactionAttributeUsage byte
 
 const (

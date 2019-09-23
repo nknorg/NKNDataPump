@@ -1,8 +1,8 @@
 package dbHelper
 
 import (
-	"NKNDataPump/common"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
 )
 
@@ -16,6 +16,11 @@ func transactionsFromRows(rows *sql.Rows) (txList []storageItem.TransactionItem,
 			&tx.Height,
 			&tx.HeightIdxUnion,
 			&tx.TxType,
+
+			&tx.Attributes,
+			&tx.Fee,
+			&tx.Nonce,
+
 			&tx.AssetId,
 			&tx.UTXOInputCount,
 			&tx.UTXOOutputCount,

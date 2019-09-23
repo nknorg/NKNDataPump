@@ -1,7 +1,7 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
+	. "github.com/nknorg/NKNDataPump/common"
 )
 
 type AddressItem struct {

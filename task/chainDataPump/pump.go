@@ -1,8 +1,8 @@
 package chainDataPump
 
 import (
-	"NKNDataPump/storage/dbHelper"
-	"NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/dbHelper"
+	"github.com/nknorg/NKNDataPump/common"
 )
 
 var currentBlockHeight = 0

@@ -1,8 +1,8 @@
 package storageItem
 
 import (
-	. "NKNDataPump/common"
-	"NKNDataPump/storage/pumpDataTypes"
+	. "github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 )
 
 type SigchainItem struct {
@@ -22,10 +22,13 @@ func (s *SigchainItem) FieldList() []string {
 	return []string{
 		"height",
 		"sig_idx",
-		"addr",
+		"id",
 		"next_pubkey",
 		"tx_hash",
 		"sig_data",
+		"sig_algo",
+		"vrf",
+		"proof",
 		"time",
 	}
 }
@@ -34,10 +37,13 @@ func (s *SigchainItem) StatementSqlValue() []string {
 	return []string{
 		Fmt2Str(s.Height),
 		Fmt2Str(s.SigIndex),
-		s.Addr,
+		s.Id,
 		s.NextPubkey,
 		s.TxHash,
 		s.SigData,
+		Fmt2Str(s.SigAlgo),
+		s.Vrf,
+		s.Proof,
 		s.Timestamp,
 	}
 }

@@ -1,46 +1,113 @@
 package chainDataPump
 
 import (
-	"NKNDataPump/storage/storageItem"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse/transactionPayload"
-	"NKNDataPump/common"
-	"NKNDataPump/network/chainDataTypes/por"
 	"encoding/hex"
-	"github.com/golang/protobuf/proto"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
-	"os"
-	"NKNDataPump/storage"
+	"strconv"
+
+	"github.com/gogo/protobuf/proto"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
+	nknCommon "github.com/nknorg/nkn/common"
+	"github.com/nknorg/nkn/pb"
 )
 
-func commitProcessor(data interface{}, extData interface{}) (err error) {
+func coinbaseProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
+	tx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(storageItem.TransactionItem)
-	commitPayload := transactionPayload.Commit{}
-	err = common.JsonPointer2Struct(data, &commitPayload)
+	block := blockInfo.(*storageItem.BlockItem)
+
+	coinbase := &pb.Coinbase{}
+	chainByte, _ := hex.DecodeString(tx.PayloadData)
+	err = proto.Unmarshal(chainByte, coinbase)
 
 	if nil != err {
-		common.Log.Fatal(err)
+		common.Log.Error(err)
 		return
 	}
 
-	sigchain := &por.SigChain{}
-	chainByte, _ := hex.DecodeString(commitPayload.SigChain)
-	err = proto.Unmarshal(chainByte, sigchain)
+	rewardTransfer := &storageItem.TransferItem{}
+	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
+	rewardTransfer.Hash = txItem.Hash
+	rewardTransfer.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
+	//rewardTransfer.FromAddr = hex.EncodeToString(coinbase.Sender)
+	senderUint160 := nknCommon.BytesToUint160(coinbase.Sender)
+	senderAddress, addrErr := senderUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+	rewardTransfer.FromAddr = senderAddress
 
-if nil != err {
+	//rewardTransfer.ToAddr = hex.EncodeToString(coinbase.Recipient)
+	recipientUint160 := nknCommon.BytesToUint160(coinbase.Recipient)
+	address, addrErr := recipientUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+
+	rewardTransfer.ToAddr = address
+	block.Validator = address
+	rewardTransfer.AssetId = ""
+	rewardTransfer.Value = common.Fmt2Str(coinbase.Amount)
+	rewardTransfer.Fee = common.Fmt2Str(txItem.Fee)
+	rewardTransfer.Height = txItem.Height
+	rewardTransfer.Timestamp = txItem.Timestamp
+
+	insertItems([]storageItem.IItem{rewardTransfer})
+
+	go recordAddr(address, txItem)
+
+	return
+}
+
+func sigchainProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
+	tx := data.(rpcApiResponse.Transaction)
+	txItem := extData.(storageItem.TransactionItem)
+
+	sigchainTx := &pb.SigChainTxn{}
+	chainByte, _ := hex.DecodeString(tx.PayloadData)
+	err = proto.Unmarshal(chainByte, sigchainTx)
+
+	if nil != err {
+		common.Log.Error(err)
+		return
+	}
+
+	sigchain := &pb.SigChain{}
+	err = proto.Unmarshal(sigchainTx.SigChain, sigchain)
+
+	if nil != err {
 		common.Log.Error(err)
 		return
 	}
 
 	var sigchainItems []storageItem.IItem
-	for idx, v := range sigchain.Elems {
-		sig := &storageItem.SigchainItem{}
-		sig.MappingFrom(hex.EncodeToString(v.Signature), txItem)
-		sig.Addr = hex.EncodeToString(v.Addr)
-		sig.NextPubkey = hex.EncodeToString(v.NextPubkey)
-		sig.SigIndex = uint32(idx)
-		sig.Timestamp = txItem.Timestamp
+	for i, v := range sigchain.Elems {
+		sigElem := &storageItem.SigchainItem{}
+		sigElem.MappingFrom(hex.EncodeToString(v.Signature), txItem)
 
-		sigchainItems = append(sigchainItems, sig)
+		if len(v.Id) == 0 {
+			if i == 0 {
+				sigElem.Id = hex.EncodeToString(sigchain.SrcId)
+			} else {
+				if i == len(sigchain.Elems)-1 {
+					sigElem.Id = hex.EncodeToString(sigchain.DestId)
+				}
+			}
+		} else {
+			sigElem.Id = hex.EncodeToString(v.Id)
+		}
+
+		sigElem.SigIndex = uint32(i)
+		sigElem.NextPubkey = hex.EncodeToString(v.NextPubkey)
+		sigElem.SigAlgo = v.SigAlgo
+		sigElem.Vrf = hex.EncodeToString(v.Vrf)
+		sigElem.Proof = hex.EncodeToString(v.Proof)
+		sigElem.Timestamp = txItem.Timestamp
+
+		sigchainItems = append(sigchainItems, sigElem)
 	}
 
 	insertItems(sigchainItems)
@@ -48,115 +115,72 @@ if nil != err {
 	return
 }
 
-func transferProcessor(data interface{}, extData interface{}) (err error) {
+func generateIdProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
 	tx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(storageItem.TransactionItem)
 
-	currentUTXOOut := tx.Outputs
-	refUTXO := tx.UTXOInputs
+	genId := &pb.GenerateID{}
+	chainByte, _ := hex.DecodeString(tx.PayloadData)
+	err = proto.Unmarshal(chainByte, genId)
 
-	//check current utxo
-	//currentUTXOCount := len(currentUTXOOut)
-	//if currentUTXOCount > 2 {
-	//	common.Log.Fatalf("not normal nkn utxo model in block %d!!", txItem.Height)
-	//	os.Exit(0)
-	//}
-
-	if 0 == len(refUTXO) {
-		common.Log.Error("no ref utxo shown!!")
-		os.Exit(0)
+	if nil != err {
+		common.Log.Error(err)
+		return
 	}
 
-	//get ref utxos
-	var refUTXOList []rpcApiResponse.TxoutputInfo
+	generateIdItem := &storageItem.GenerateIdItem{}
+	generateIdItem.MappingFrom(nil, txItem)
+	generateIdItem.RegistrationFee = genId.RegistrationFee
+	generateIdItem.PublicKey = hex.EncodeToString(genId.PublicKey)
 
-	for _, v := range refUTXO {
-		utxo, err := getRefUTXO(v.ReferTxID, v.ReferTxOutputIndex)
-		if nil != err {
-			//todo: error process
-			common.Log.Errorf("some thing wrong when try to get ref utxos."+
-				"err [%v] . block height [%d] . tx hash [%s]", err, txItem.Height, txItem.Hash)
-			return err
-		}
-
-		if "" == utxo.Address {
-			utxo.Address, err = common.ScriptHashToAddress(utxo.ProgramHash)
-
-			if nil != err {
-				//todo: error process
-				common.Log.Tracef("some thing wrong when calc address."+
-					"err [%v] . block height [%d] . tx hash [%s]", err, txItem.Height, txItem.Hash)
-				return err
-			}
-		}
-
-		refUTXOList = append(refUTXOList, utxo)
-
-		go recordAddr(utxo.Address, txItem)
-	}
-
-	//calc the transfer
-	txItem.AssetId = currentUTXOOut[0].AssetID
-	transferItems := utxoTransferCalc(refUTXOList, currentUTXOOut, txItem)
-	if nil != transferItems {
-		err = insertItems(transferItems)
-	}
+	insertItems([]storageItem.IItem{generateIdItem})
 
 	return
 }
 
-
-func registerAssetPayloadProcessor(data interface{}, extData interface{}) (err error) {
-	txItem := extData.(storageItem.TransactionItem)
-	regPayload := transactionPayload.Register{}
-	err = common.JsonPointer2Struct(data, &regPayload)
-
-	assetItem := storageItem.AssetItem{}
-	assetItem.MappingFrom(regPayload, txItem)
-	txItem.AssetId = assetItem.Hash
-
-	insertItems([]storageItem.IItem{
-		&assetItem,
-	})
-
-	return
-}
-
-func assetIssueProcessor(data interface{}, extData interface{}) (err error) {
-	issueItem := storageItem.AssetIssueItem{}
-	issueItem.MappingFrom(data, extData)
-
-	storage.IgnoreKeyInsert([]storageItem.IItem{
-		&issueItem,
-	})
-
-	insertItems([]storageItem.IItem{
-		&issueItem,
-	})
-
-	go recordAddr(issueItem.IssueTo, extData.(storageItem.TransactionItem))
-
-	return
-}
-
-func payProcessor(data interface{}, extData interface{}) (err error) {
+func transferAssetProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
 	tx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(storageItem.TransactionItem)
-	payPayload := transactionPayload.Pay{}
-	common.JsonPointer2Struct(tx.Payload, &payPayload)
 
-	var payList []storageItem.IItem
-	for _, o := range tx.Outputs {
-		newPayItem := &storageItem.PayItem{}
-		newPayItem.MappingFrom(payPayload, txItem)
+	transferAsset := &pb.TransferAsset{}
+	chainByte, _ := hex.DecodeString(tx.PayloadData)
+	err = proto.Unmarshal(chainByte, transferAsset)
 
-		newPayItem.Payee = o.Address
-		newPayItem.Value = o.Value
-
-		payList = append(payList, newPayItem)
+	if nil != err {
+		common.Log.Error(err)
+		return
 	}
 
-	err = insertItems(payList)
+	transferAssetItem := &storageItem.TransferItem{}
+	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
+	transferAssetItem.Hash = txItem.Hash
+	transferAssetItem.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
 
+	//transferAssetItem.FromAddr = hex.EncodeToString(transferAsset.Sender)
+	senderUint160 := nknCommon.BytesToUint160(transferAsset.Sender)
+	senderAddress, addrErr := senderUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+	transferAssetItem.FromAddr = senderAddress
+
+	//transferAssetItem.ToAddr = hex.EncodeToString(transferAsset.Recipient)
+	addressUint := nknCommon.BytesToUint160(transferAsset.Recipient)
+	toAddress, addrErr := addressUint.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+
+	transferAssetItem.ToAddr = toAddress
+	transferAssetItem.AssetId = ""
+	transferAssetItem.Value = common.Fmt2Str(transferAsset.Amount)
+
+	transferAssetItem.Fee = common.Fmt2Str(txItem.Fee)
+	transferAssetItem.Height = txItem.Height
+	transferAssetItem.Timestamp = txItem.Timestamp
+
+	insertItems([]storageItem.IItem{transferAssetItem})
 	return
 }

@@ -1,15 +1,15 @@
 package dataInspection
 
 import (
-	"NKNDataPump/common"
-	"NKNDataPump/network"
-	"NKNDataPump/storage"
-	"NKNDataPump/storage/dbHelper"
-	"NKNDataPump/storage/pumpDataTypes"
-	"NKNDataPump/storage/storageItem"
+	"github.com/nknorg/NKNDataPump/common"
+	"github.com/nknorg/NKNDataPump/network"
+	"github.com/nknorg/NKNDataPump/storage"
+	"github.com/nknorg/NKNDataPump/storage/dbHelper"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"time"
-	"NKNDataPump/network/rpcRequest"
-	"NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/network/rpcRequest"
+	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 )
 
 func Start() {
