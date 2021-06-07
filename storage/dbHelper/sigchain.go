@@ -1,9 +1,9 @@
 package dbHelper
 
 import (
-	"github.com/nknorg/NKNDataPump/storage/storageItem"
 	"database/sql"
-	"github.com/nknorg/nkn/pb"
+	"github.com/nknorg/NKNDataPump/storage/storageItem"
+	"github.com/nknorg/nkn/v2/pb"
 )
 
 func sigchainFromRows(rows *sql.Rows) (sigchainList []storageItem.SigchainItem, count int, err error) {
@@ -51,8 +51,8 @@ func QuerySigchainForTx(txHash string) (sc []storageItem.SigchainItem, err error
 
 func QuerySigchainList(page uint32) (scList []storageItem.SigchainItem, count int, err error) {
 
-	rows, err := db.Query("select * from t_sigchain " +
-		" order by height DESC limit?,120", page * 120)
+	rows, err := db.Query("select * from t_sigchain "+
+		" order by height DESC limit ?,120", page*120)
 
 	if nil != err {
 		return

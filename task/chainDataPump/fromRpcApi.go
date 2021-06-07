@@ -10,7 +10,7 @@ import (
 	"github.com/nknorg/NKNDataPump/network/rpcRequest"
 	"github.com/nknorg/NKNDataPump/storage"
 	"github.com/nknorg/NKNDataPump/storage/storageItem"
-	"github.com/nknorg/nkn/pb"
+	"github.com/nknorg/nkn/v2/pb"
 )
 
 func rpcDataPump() {
@@ -116,10 +116,11 @@ func getBlockDetailByHeight(height int, blockItem *storageItem.BlockItem, wg *sy
 
 func parseTransactions(tx []rpcApiResponse.Transaction, blockItem *storageItem.BlockItem) {
 	processorMap := map[pb.PayloadType]func(interface{}, interface{}, interface{}) error{
-		pb.SIG_CHAIN_TXN_TYPE:  sigchainProcessor,
-		pb.COINBASE_TYPE:       coinbaseProcessor,
-		pb.GENERATE_ID_TYPE:    generateIdProcessor,
-		pb.TRANSFER_ASSET_TYPE: transferAssetProcessor,
+		pb.PayloadType_SIG_CHAIN_TXN_TYPE:  sigchainProcessor,
+		pb.PayloadType_COINBASE_TYPE:       coinbaseProcessor,
+		pb.PayloadType_GENERATE_ID_TYPE:    generateIdProcessor,
+		pb.PayloadType_TRANSFER_ASSET_TYPE: transferAssetProcessor,
+		pb.PayloadType_NANO_PAY_TYPE:       nanoPayProcessor,
 	}
 
 	var txItems []storageItem.IItem

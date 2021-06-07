@@ -2,9 +2,9 @@ package storageItem
 
 import (
 	. "github.com/nknorg/NKNDataPump/common"
-	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
-	"github.com/nknorg/nkn/pb"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
+	"github.com/nknorg/nkn/v2/pb"
 )
 
 const (

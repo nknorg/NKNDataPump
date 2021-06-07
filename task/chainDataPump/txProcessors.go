@@ -8,8 +8,8 @@ import (
 	"github.com/nknorg/NKNDataPump/common"
 	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
 	"github.com/nknorg/NKNDataPump/storage/storageItem"
-	nknCommon "github.com/nknorg/nkn/common"
-	"github.com/nknorg/nkn/pb"
+	nknCommon "github.com/nknorg/nkn/v2/common"
+	"github.com/nknorg/nkn/v2/pb"
 )
 
 func coinbaseProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
@@ -139,6 +139,53 @@ func generateIdProcessor(data interface{}, extData interface{}, blockInfo interf
 }
 
 func transferAssetProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
+	tx := data.(rpcApiResponse.Transaction)
+	txItem := extData.(storageItem.TransactionItem)
+
+	transferAsset := &pb.TransferAsset{}
+	chainByte, _ := hex.DecodeString(tx.PayloadData)
+	err = proto.Unmarshal(chainByte, transferAsset)
+
+	if nil != err {
+		common.Log.Error(err)
+		return
+	}
+
+	transferAssetItem := &storageItem.TransferItem{}
+	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
+	transferAssetItem.Hash = txItem.Hash
+	transferAssetItem.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
+
+	//transferAssetItem.FromAddr = hex.EncodeToString(transferAsset.Sender)
+	senderUint160 := nknCommon.BytesToUint160(transferAsset.Sender)
+	senderAddress, addrErr := senderUint160.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+	transferAssetItem.FromAddr = senderAddress
+
+	//transferAssetItem.ToAddr = hex.EncodeToString(transferAsset.Recipient)
+	addressUint := nknCommon.BytesToUint160(transferAsset.Recipient)
+	toAddress, addrErr := addressUint.ToAddress()
+	if nil != addrErr {
+		common.Log.Error(err)
+		return
+	}
+
+	transferAssetItem.ToAddr = toAddress
+	transferAssetItem.AssetId = ""
+	transferAssetItem.Value = common.Fmt2Str(transferAsset.Amount)
+
+	transferAssetItem.Fee = common.Fmt2Str(txItem.Fee)
+	transferAssetItem.Height = txItem.Height
+	transferAssetItem.Timestamp = txItem.Timestamp
+
+	insertItems([]storageItem.IItem{transferAssetItem})
+	return
+}
+
+func nanoPayProcessor(data interface{}, extData interface{}, blockInfo interface{}) (err error) {
 	tx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(storageItem.TransactionItem)
 

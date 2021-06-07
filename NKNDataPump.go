@@ -4,6 +4,7 @@ import (
 	"github.com/nknorg/NKNDataPump/cli/commands"
 	"github.com/nknorg/NKNDataPump/common"
 	"github.com/nknorg/NKNDataPump/config"
+	"github.com/nknorg/NKNDataPump/network/rpcRequest"
 	"github.com/nknorg/NKNDataPump/server"
 	"github.com/nknorg/NKNDataPump/storage"
 	"github.com/nknorg/NKNDataPump/task/chainDataPump"
@@ -11,7 +12,6 @@ import (
 	"github.com/urfave/cli"
 	"os"
 	"time"
-	"github.com/nknorg/NKNDataPump/network/rpcRequest"
 )
 
 func getCliApp() (app *cli.App) {

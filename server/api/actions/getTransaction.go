@@ -1,17 +1,16 @@
 package apiServerAction
 
 import (
+	"github.com/gin-gonic/gin"
 	. "github.com/nknorg/NKNDataPump/common"
 	. "github.com/nknorg/NKNDataPump/server/api/const"
 	"github.com/nknorg/NKNDataPump/server/api/response"
 	"github.com/nknorg/NKNDataPump/storage/dbHelper"
-	"github.com/gin-gonic/gin"
 	"github.com/nknorg/NKNDataPump/storage/storageItem"
-	"github.com/nknorg/nkn/pb"
+	"github.com/nknorg/nkn/v2/pb"
 )
 
-var GetTransactionAPI IRestfulAPIAction = &getTransaction{
-}
+var GetTransactionAPI IRestfulAPIAction = &getTransaction{}
 
 type getTransaction struct {
 	restfulAPIBase
@@ -56,13 +55,13 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 	var sc []storageItem.SigchainItem
 
 	switch tx.TxType {
-	case int32(pb.COINBASE_TYPE):
+	case int32(pb.PayloadType_COINBASE_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case int32(pb.TRANSFER_ASSET_TYPE):
+	case int32(pb.PayloadType_TRANSFER_ASSET_TYPE):
 		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
 
-	case int32(pb.SIG_CHAIN_TXN_TYPE):
+	case int32(pb.PayloadType_SIG_CHAIN_TXN_TYPE):
 		sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
 
 	default:
