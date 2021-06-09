@@ -64,6 +64,9 @@ func (g *getTransaction) Action(ctx *gin.Context) {
 	case int32(pb.PayloadType_SIG_CHAIN_TXN_TYPE):
 		sc, err = dbHelper.QuerySigchainForTx(tx.Hash)
 
+	case int32(pb.PayloadType_NANO_PAY_TYPE):
+		transfers, _, err = dbHelper.QueryTransferByTxHash(tx.Hash)
+
 	default:
 	}
 

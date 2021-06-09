@@ -189,22 +189,24 @@ func nanoPayProcessor(data interface{}, extData interface{}, blockInfo interface
 	tx := data.(rpcApiResponse.Transaction)
 	txItem := extData.(storageItem.TransactionItem)
 
-	transferAsset := &pb.TransferAsset{}
+	nanoPay := &pb.NanoPay{}
 	chainByte, _ := hex.DecodeString(tx.PayloadData)
-	err = proto.Unmarshal(chainByte, transferAsset)
+	err = proto.Unmarshal(chainByte, nanoPay)
 
 	if nil != err {
 		common.Log.Error(err)
 		return
 	}
 
+	common.Log.Infof("nanoPayProcessor unmarshal nanoPay: %s", nanoPay)
+
 	transferAssetItem := &storageItem.TransferItem{}
 	unionBaseIdx, _ := strconv.ParseUint(txItem.HeightIdxUnion, 10, 64)
 	transferAssetItem.Hash = txItem.Hash
 	transferAssetItem.HeightTxIdx = common.Fmt2Str(unionBaseIdx)
 
-	//transferAssetItem.FromAddr = hex.EncodeToString(transferAsset.Sender)
-	senderUint160 := nknCommon.BytesToUint160(transferAsset.Sender)
+	//transferAssetItem.FromAddr = hex.EncodeToString(nanoPay.Sender)
+	senderUint160 := nknCommon.BytesToUint160(nanoPay.Sender)
 	senderAddress, addrErr := senderUint160.ToAddress()
 	if nil != addrErr {
 		common.Log.Error(err)
@@ -212,8 +214,8 @@ func nanoPayProcessor(data interface{}, extData interface{}, blockInfo interface
 	}
 	transferAssetItem.FromAddr = senderAddress
 
-	//transferAssetItem.ToAddr = hex.EncodeToString(transferAsset.Recipient)
-	addressUint := nknCommon.BytesToUint160(transferAsset.Recipient)
+	//transferAssetItem.ToAddr = hex.EncodeToString(nanoPay.Recipient)
+	addressUint := nknCommon.BytesToUint160(nanoPay.Recipient)
 	toAddress, addrErr := addressUint.ToAddress()
 	if nil != addrErr {
 		common.Log.Error(err)
@@ -222,7 +224,7 @@ func nanoPayProcessor(data interface{}, extData interface{}, blockInfo interface
 
 	transferAssetItem.ToAddr = toAddress
 	transferAssetItem.AssetId = ""
-	transferAssetItem.Value = common.Fmt2Str(transferAsset.Amount)
+	transferAssetItem.Value = common.Fmt2Str(nanoPay.Amount)
 
 	transferAssetItem.Fee = common.Fmt2Str(txItem.Fee)
 	transferAssetItem.Height = txItem.Height
