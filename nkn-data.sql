@@ -95,7 +95,7 @@ CREATE TABLE `t_assets_issue_record` (
 --
 
 CREATE TABLE `t_assets_transfer` (
-  `hash` varchar(64) NOT NULL COMMENT '所属交易hash',
+  `hash` varchar(64) NOT NULL PRIMARY KEY COMMENT '所属交易hash',
   `height` int(10) UNSIGNED NOT NULL COMMENT '交易所在区块高度',
   `height_tx_idx_union` bigint(20) UNSIGNED NOT NULL COMMENT '区块高度、交易序号、转账序号的联合值',
   `from_addr` varchar(64) NOT NULL COMMENT '转出账户',
@@ -104,7 +104,7 @@ CREATE TABLE `t_assets_transfer` (
   `value` varchar(30) NOT NULL COMMENT '转账数额',
   `fee` varchar(30) NOT NULL COMMENT '转账费用',
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '转账时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -252,14 +252,14 @@ ALTER TABLE `t_assets_issue_record`
 -- 表的索引 `t_assets_transfer`
 --
 ALTER TABLE `t_assets_transfer`
-  ADD UNIQUE KEY `hash` (`hash`,`from_addr`,`to_addr`) USING BTREE,
   ADD KEY `height_tx_to_addr` (`to_addr`,`height_tx_idx_union`) USING BTREE,
   ADD KEY `height_tx_from_addr` (`from_addr`,`height_tx_idx_union`) USING BTREE;
 
-ALTER TABLE `t_assets_transfer` ADD PRIMARY KEY (`hash`);
+ALTER TABLE `t_assets_transfer` ADD KEY (`hash`);
 CREATE INDEX index_t_assets_transfer_from_addr on t_assets_transfer (from_addr);
 CREATE INDEX index_t_assets_transfer_to_addr on t_assets_transfer (to_addr);
 CREATE INDEX index_t_assets_transfer_height_tx_idx_union on t_assets_transfer (height_tx_idx_union desc);
+CREATE INDEX index_t_assets_transfer_height on t_assets_transfer (height);
 
 --
 -- 表的索引 `t_blocks`

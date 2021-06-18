@@ -2,8 +2,8 @@ package storageItem
 
 import (
 	. "github.com/nknorg/NKNDataPump/common"
-	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 	"github.com/nknorg/NKNDataPump/network/chainDataTypes/rpcApiResponse"
+	"github.com/nknorg/NKNDataPump/storage/pumpDataTypes"
 	"time"
 )
 
@@ -77,7 +77,7 @@ func (b *BlockItem) MappingFrom(data interface{}, _ interface{}) {
 	b.SignerPk = blockHeader.SignerPk
 	b.StateRoot = blockHeader.StateRoot
 	b.Validator = ""
-	b.Timestamp = Fmt2Str(time.Unix(int64(blockHeader.Timestamp), 0))
+	b.Timestamp = Fmt2Str(time.Unix(int64(blockHeader.Timestamp), 0).Format("2006-01-02 15:04:05"))
 	b.TransactionsRoot = blockHeader.TransactionsRoot
 	b.WinnerHash = blockHeader.WinnerHash
 	b.Size = block.Result.Size
