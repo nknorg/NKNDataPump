@@ -255,7 +255,6 @@ ALTER TABLE `t_assets_transfer`
   ADD KEY `height_tx_to_addr` (`to_addr`,`height_tx_idx_union`) USING BTREE,
   ADD KEY `height_tx_from_addr` (`from_addr`,`height_tx_idx_union`) USING BTREE;
 
-ALTER TABLE `t_assets_transfer` ADD KEY (`hash`);
 CREATE INDEX index_t_assets_transfer_from_addr on t_assets_transfer (from_addr);
 CREATE INDEX index_t_assets_transfer_to_addr on t_assets_transfer (to_addr);
 CREATE INDEX index_t_assets_transfer_height_tx_idx_union on t_assets_transfer (height_tx_idx_union desc);
